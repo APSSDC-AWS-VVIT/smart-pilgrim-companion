@@ -1,0 +1,23 @@
+﻿route_id,source,destination,travel_mode,duration,estimated_cost,notes
+R001,Hyderabad,Tirupati,Flight,1 Hour,₹3500-₹5500,4 daily flights
+R002,Hyderabad,Tirupati,Train,12 Hours,₹450-₹1200,Narayanadri Express
+R003,Hyderabad,Tirupati,Bus,10 Hours,₹900-₹1400,AC Sleeper
+R004,Vijayawada,Tirupati,Train,6.5 Hours,₹250-₹700,Pinakini Express
+R005,Vijayawada,Tirupati,Bus,8 Hours,₹600-₹950,APSRTC Express
+R006,Visakhapatnam,Tirupati,Flight,1.5 Hours,₹4500-₹7000,Direct flight
+R007,Visakhapatnam,Tirupati,Train,14 Hours,₹550-₹1500,Tirumala Express
+R008,Visakhapatnam,Tirupati,Bus,14 Hours,₹1200-₹1800,Multi-axle sleeper
+R009,Hyderabad,Srisailam,Bus,6 Hours,₹400-₹700,APSRTC/TGSRTC
+R010,Hyderabad,Srisailam,Private Car,4.5 Hours,₹4500-₹6000,Via NH765
+R011,Vijayawada,Srisailam,Train + Bus,7.5 Hours,₹350-₹900,Via Guntur/Markapur
+R012,Vijayawada,Srisailam,Bus,8.5 Hours,₹550-₹850,Via Macherla
+R013,Visakhapatnam,Srisailam,Train + Bus,15 Hours,₹750-₹1800,Via Markapur/Kurnool
+R014,Hyderabad,Srikalahasti,Train,11 Hours,₹400-₹1100,Krishna Express
+R015,Vijayawada,Srikalahasti,Train,6 Hours,₹200-₹650,Via Gudur Junction
+R016,Visakhapatnam,Srikalahasti,Train,13 Hours,₹500-₹1400,Via Vijayawada and Gudur
+R017,Hyderabad,Srikalahasti,Bus,10-12 Hours,₹600-₹1200,APSRTC/TSRTC
+R018,Vijayawada,Srikalahasti,Bus,7 Hours,₹500-₹800,APSRTC
+R019,Hyderabad,Srikalahasti,Private Car,10-11 Hours,₹8000-₹15000,Approx. 630 km
+R020,Vijayawada,Srikalahasti,Private Car,6-7 Hours,₹4000-₹8000,Approx. 380 km
+R021,Chennai,Srikalahasti,Private Car,2.5-3 Hours,₹2500-₹4500,Approx. 120 km
+R022,Tirupati Airport,Srikalahasti,Taxi,30-40 Minutes,₹600-₹1200,Approx. 25 km

@@ -1,0 +1,22 @@
+﻿budget_id,temple_id,budget_type,min_cost,max_cost,persons,days,includes
+B001,T001,low,3400,4500,1,3,Complete pilgrimage
+B002,T001,medium,9000,12000,1,3,Complete pilgrimage
+B003,T001,premium,27000,40000,1,3,Complete pilgrimage
+B004,T001,low,7000,9000,2,3,Couple budget
+B005,T001,medium,18000,24000,2,3,Couple budget
+B006,T001,premium,50000,75000,2,3,Couple budget
+B007,T001,low,14000,18000,4,3,Family budget
+B008,T001,medium,35000,48000,4,3,Family budget
+B009,T001,premium,90000,150000,4,3,Family budget
+B010,T002,low,1020,1200,1,2,Complete pilgrimage
+B011,T002,medium,4120,5300,1,2,Complete pilgrimage
+B012,T002,premium,12120,14100,1,2,Complete pilgrimage
+B013,T003,low,1250,1450,1,2,"Travel, accommodation, transit, puja, food"
+B014,T003,medium,5000,6000,1,2,"Travel, accommodation, transit, puja, food"
+B015,T003,premium,11910,13910,1,2,"Travel, accommodation, transit, puja, food"
+B016,T003,low,2500,2900,2,2,Couple budget
+B017,T003,medium,9500,11500,2,2,Couple budget
+B018,T003,premium,22000,26000,2,2,Couple budget
+B019,T003,low,5000,5800,4,2,Family budget
+B020,T003,medium,18000,22000,4,2,Family budget
+B021,T003,premium,42000,52000,4,2,Family budget

@@ -1,0 +1,24 @@
+﻿A2,B2,C2,D2,E2,F2
+place_id,temple_id,place_name,place_type,distance_from_temple,description
+P001,T001,Papavinasam Waterfalls & Dam Reservoir,Waterfall,5 km,Sacred waterfall and reservoir
+P002,T001,Chakra Theertham,Sacred Site,2.8 km,Sacred rock valley with waterfall
+P003,T001,Sri Venugopala Swamy Temple,Temple,3.9 km,Temple dedicated to Lord Krishna
+P004,T001,Silathoranam,Natural Formation,1 km,Natural rock arch formation
+P005,T001,Srivari Padaalu,Viewpoint,~2 km,Highest elevation peak with sacred footprints
+P006,T001,Sri Govindaraja Swamy Temple,Temple,0.5 km (walking distance from station area),Central Tirupati city temple
+P007,T001,Sri Kapileswara Swamy Temple,Temple,~3 km,Shiva temple with waterfall pool
+P008,T001,Sri Venkateswara Zoological Park,Zoo,~10 km,Open-moat zoological park
+P009,T001,Sri Srinivasa Mangapuram,Temple,12 km,Sacred post-wedding stay site
+P010,T001,Chandragiri Fort,Historical Site,11 km,Vijayanagara Empire fort
+P011,T002,Sakshi Ganapathi,Temple,3 km before town,Pilgrimage stop
+P012,T002,Hatakeswaram,Temple,~5 km,Temple site
+P013,T002,Paladhara Panchadhara,Nature Spot,~4 km,Forest ravine trail
+P014,T002,Shikharam,Viewpoint,~8 km,Highest point near Srisailam
+P015,T002,Pathala Ganga,River Access,~2 km,Krishna River access point
+P016,T002,Akkamahadevi Caves,Cave,16 km by boat,Cave pilgrimage destination
+P017,T002,Chenchu Lakshmi Tribal Museum,Museum,~1 km,Tribal heritage museum
+P018,T003,Veyilingala Kona Waterfall,Waterfall,8 km,Forest eco-trail waterfall
+P019,T003,Bharadwaja Tirtham,Sacred Water Body,~2 km,Ancient spring reservoir
+P020,T003,Durgambika Temple,Temple,~1 km,Hilltop shrine
+P021,T003,Pathala Vinayaka Temple,Temple,Northern Entrance,Underground Ganesha shrine
+,,,,,

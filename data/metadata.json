@@ -1,0 +1,14 @@
+{
+  "source_files": [
+    "Tirumala.pdf",
+    "Srisailam.pdf",
+    "Srikalahasti.pdf"
+  ],
+  "temples_found": [
+    "Tirumala",
+    "Srisailam",
+    "Srikalahasti"
+  ],
+  "total_routes": 22,
+  "total_schedules": 10
+}
