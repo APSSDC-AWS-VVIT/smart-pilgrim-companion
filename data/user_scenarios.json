@@ -1,0 +1,102 @@
+[
+  {
+    "user_type": "Tirumala Pilgrim",
+    "goal": "Complete Tirumala pilgrimage, darshan and sightseeing",
+    "steps": [
+      "Select travel option (Flight/Train/Bus)",
+      "Reach Tirupati",
+      "Check into accommodation",
+      "Visit Sri Govindaraja Swamy Temple",
+      "Visit Sri Kapileswara Swamy Temple",
+      "Visit Sri Venkateswara Zoological Park",
+      "Visit Sri Srinivasa Mangapuram",
+      "Visit Chandragiri Fort",
+      "Travel to Tirumala",
+      "Complete Darshan",
+      "Collect Laddu Prasadam",
+      "Visit Papavinasam Waterfalls",
+      "Visit Chakra Theertham",
+      "Visit Sri Venugopala Swamy Temple",
+      "Visit Silathoranam",
+      "Visit Srivari Padaalu",
+      "Checkout",
+      "Return Journey"
+    ],
+    "pain_points": [
+      "Long travel duration",
+      "Darshan waiting time",
+      "Accommodation availability",
+      "Heavy pilgrim crowds"
+    ],
+    "recommendations": [
+      "Book travel tickets in advance",
+      "Reserve accommodation early",
+      "Plan darshan before sightseeing",
+      "Start sightseeing early morning"
+    ]
+  },
+  {
+    "user_type": "Srisailam Pilgrim",
+    "goal": "Complete Srisailam darshan and nearby attractions",
+    "steps": [
+      "Select travel option",
+      "Reach Srisailam",
+      "Cross forest checkpost",
+      "Visit Sakshi Ganapathi",
+      "Visit Hatakeswaram",
+      "Visit Paladhara Panchadhara",
+      "Visit Shikharam",
+      "Check into accommodation",
+      "Complete Darshan",
+      "Visit Pathala Ganga",
+      "Use Ropeway",
+      "Take Krishna River Motorboat Cruise",
+      "Visit Akkamahadevi Caves",
+      "Visit Chenchu Lakshmi Tribal Museum",
+      "Checkout",
+      "Return Journey"
+    ],
+    "pain_points": [
+      "Forest route restrictions",
+      "Limited transport options",
+      "Long travel time",
+      "Weather conditions"
+    ],
+    "recommendations": [
+      "Cross forest gates before closing time",
+      "Book accommodation beforehand",
+      "Carry water and essentials",
+      "Plan boat cruise timing in advance"
+    ]
+  },
+  {
+    "user_type": "Srikalahasti Pilgrim",
+    "goal": "Complete Rahu-Ketu Puja, darshan and sightseeing",
+    "steps": [
+      "Select travel option",
+      "Reach Srikalahasti",
+      "Check into accommodation",
+      "Visit Veyilingala Kona Waterfall",
+      "Visit Bharadwaja Tirtham",
+      "Visit Durgambika Temple",
+      "Visit Pathala Vinayaka Temple",
+      "Attend Rahu-Ketu Puja",
+      "Complete Sri Kalahasteeswara Darshan",
+      "Complete Gnana Prasunambika Darshan",
+      "Checkout",
+      "Return Journey"
+    ],
+    "pain_points": [
+      "Travel planning",
+      "Puja ticket selection",
+      "Crowds during special days",
+      "Accommodation availability"
+    ],
+    "recommendations": [
+      "Book puja tickets early",
+      "Reach before reporting time",
+      "Complete sightseeing before puja day",
+      "Plan return transport in advance"
+    ]
+  }
+]

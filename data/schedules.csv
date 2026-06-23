@@ -1,0 +1,32 @@
+﻿schedule_id,temple_id,activity,start_time,end_time,notes
+S001,T001,Sri Govindaraja Swamy Temple,8:00 AM,9:30 AM,Day 1 Tirupati tour
+S002,T001,Sri Kapileswara Swamy Temple,9:45 AM,11:15 AM,Day 1 Tirupati tour
+S003,T001,Sri Venkateswara Zoological Park,11:35 AM,2:35 PM,Day 1 Tirupati tour
+S004,T001,Sri Srinivasa Mangapuram,2:50 PM,4:20 PM,Day 1 Tirupati tour
+S005,T001,Chandragiri Fort & Laser Show,4:30 PM,8:00 PM,Day 1 Tirupati tour
+S006,T001,Papavinasam Waterfalls,8:00 AM,9:30 AM,Day 3 sightseeing
+S007,T001,Chakra Theertham,9:45 AM,11:00 AM,Day 3 sightseeing
+S008,T001,Sri Venugopala Swamy Temple,11:05 AM,11:50 AM,Day 3 sightseeing
+S009,T001,Silathoranam,11:55 AM,12:40 PM,Day 3 sightseeing
+S010,T001,Srivari Padaalu,12:55 PM,2:00 PM,Day 3 sightseeing
+S011,T002,Sakshi Ganapathi,9:00 AM,9:00 AM,Day 1
+S012,T002,Hatakeswaram,10:00 AM,11:30 AM,Day 1
+S013,T002,Paladhara Panchadhara,10:47 AM,12:45 PM,Day 1
+S014,T002,Shikharam,12:30 PM,2:00 PM,Day 1
+S015,T002,Pathala Ganga,7:00 AM,8:00 AM,Day 2
+S016,T002,Krishna River Motorboat Cruise,8:00 AM,9:00 AM,Day 2
+S017,T002,Akkamahadevi Caves,9:00 AM,11:30 AM,Day 2
+S018,T002,Return Cruise & Ascent,11:30 AM,12:30 PM,Day 2
+S019,T002,Lunch,12:45 PM,1:45 PM,Day 2
+S020,T002,Chenchu Lakshmi Tribal Museum,2:00 PM,3:00 PM,Day 2
+S021,T002,Checkout,3:00 PM,3:30 PM,Day 2
+S022,T003,Veyilingala Kona Waterfall,9:00 AM,11:30 AM,Day 1
+S023,T003,Bharadwaja Tirtham,12:00 PM,1:00 PM,Day 1
+S024,T003,Lunch & Market Walk,1:10 PM,2:30 PM,Day 1
+S025,T003,Durgambika Temple,2:45 PM,4:00 PM,Day 1
+S026,T003,Pathala Vinayaka Temple,4:15 PM,5:15 PM,Day 1
+S027,T003,Ticket Verification,6:30 AM,7:00 AM,Day 2
+S028,T003,Rahu–Ketu Puja,7:00 AM,8:30 AM,Day 2
+S029,T003,Sri Kalahasteeswara Darshan,8:30 AM,9:30 AM,Day 2
+S030,T003,Gnana Prasunambika Darshan,9:30 AM,10:15 AM,Day 2
+S031,T003,Temple Exit,10:30 AM,10:30 AM,Day 2
