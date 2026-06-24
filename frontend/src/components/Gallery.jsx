@@ -3,15 +3,15 @@ export default function Gallery({ images, title = 'Gallery' }) {
     <section className="space-y-4">
       <div className="flex items-end justify-between gap-3">
         <h3 className="display-font text-2xl font-bold text-temple-deep">{title}</h3>
-        <span className="text-sm text-slate-500">{images.length} images</span>
+        <span className="text-sm text-app-muted">{images.length} images</span>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div className="columns-1 gap-4 sm:columns-2 xl:columns-3">
         {images.map((image) => (
-          <figure key={image.src} className="overflow-hidden rounded-3xl border border-amber-100 bg-white shadow-sm">
+          <figure key={image.src} className="mb-4 break-inside-avoid overflow-hidden rounded-3xl surface-card">
             <div className="aspect-[4/3]">
-              <img src={image.src} alt={image.alt} className="h-full w-full object-cover" />
+              <img src={image.src} alt={image.alt} loading="lazy" decoding="async" className="h-full w-full object-cover" />
             </div>
-            <figcaption className="px-4 py-3 text-sm text-slate-600">{image.label}</figcaption>
+            <figcaption className="px-4 py-3 text-sm text-app-muted">{image.label}</figcaption>
           </figure>
         ))}
       </div>
