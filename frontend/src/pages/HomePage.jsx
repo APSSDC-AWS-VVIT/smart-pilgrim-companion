@@ -1,17 +1,65 @@
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import SearchBar from '../components/SearchBar';
 import TempleCard from '../components/TempleCard';
 import RouteCard from '../components/RouteCard';
-import { temples, getTopRoutes, metadata } from '../data';
+import Loader from '../components/Loader';
+import { getRoutes } from '../services/routeService';
+import { getTemples } from '../services/templeService';
 
 export default function HomePage() {
-  const featuredTemples = temples;
+  const navigate = useNavigate();
+  const [searchValue, setSearchValue] = useState('');
+  const [temples, setTemples] = useState([]);
+  const [routes, setRoutes] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadHomeData() {
+      setLoading(true);
+      setError('');
+
+      try {
+        const [templeResults, routeResults] = await Promise.all([getTemples(), getRoutes()]);
+        if (active) {
+          setTemples(templeResults);
+          setRoutes(routeResults);
+        }
+      } catch (err) {
+        if (active) {
+          setError(err.message || 'Unable to load home data.');
+          setTemples([]);
+          setRoutes([]);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadHomeData();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const featuredTemples = temples.slice(0, 3);
   const highlightItems = [
-    `3 validated temples`,
-    `${metadata.totalRoutes} route records`,
-    `${metadata.totalSchedules} schedule records`,
-    'Temporary frontend data adapters',
+    `${temples.length || 3} validated temples`,
+    `${routes.length || 22} route records`,
+    'Backend APIs connected',
+    'Frontend uses API-backed data',
   ];
+
+  function handleHomeSearch() {
+    const query = searchValue.trim();
+    navigate(query ? `/temples?q=${encodeURIComponent(query)}` : '/temples');
+  }
 
   return (
     <>
@@ -31,7 +79,7 @@ export default function HomePage() {
             </div>
 
             <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
-              <SearchBar value="" onChange={() => {}} placeholder="Search temple names, routes, or nearby places" />
+              <SearchBar value={searchValue} onChange={setSearchValue} onSubmit={handleHomeSearch} placeholder="Search temple names, routes, or nearby places" />
               <Link to="/planner" className="inline-flex items-center justify-center rounded-2xl bg-temple-deep px-6 py-3 text-sm font-semibold text-white shadow-glow transition hover:bg-temple-gold">
                 Open planner
               </Link>
@@ -50,15 +98,15 @@ export default function HomePage() {
             <div className="rounded-[2rem] border border-amber-100 bg-white p-5 shadow-glow">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-temple-gold">Quick Planner</p>
               <div className="mt-4 space-y-3 text-sm text-slate-600">
-                <p>Choose a temple, select a budget band, and preview a suggested plan before backend APIs are connected.</p>
+                <p>Choose a temple, select a budget band, and preview a suggested plan directly from the backend planner endpoint.</p>
                 <div className="rounded-2xl bg-amber-50 px-4 py-3 text-temple-deep">Mobile-first layout with clean cards and warm temple palette.</div>
               </div>
             </div>
             <div className="rounded-[2rem] border border-deep-100 bg-gradient-to-br from-temple-deep to-[#294e74] p-5 text-white shadow-glow">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-200">Highlights</p>
               <div className="mt-4 space-y-3 text-sm leading-6 text-white/90">
-                <p>Temple listings, detailed views, route discovery, gallery browsing, and itinerary planning built from repository data.</p>
-                <p>Ready for minimal backend replacement later because the data shape mirrors CSV and JSON source fields.</p>
+                <p>Temple listings, detailed views, route discovery, gallery browsing, and itinerary planning are now powered by the backend APIs.</p>
+                <p>Response field names are preserved in the service layer so the UI stays unchanged.</p>
               </div>
             </div>
           </div>
@@ -76,22 +124,26 @@ export default function HomePage() {
           </Link>
         </div>
 
-        <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {featuredTemples.map((temple) => (
-            <TempleCard key={temple.id} temple={temple} compact />
-          ))}
-        </div>
+        {loading ? <div className="mt-8"><Loader /></div> : null}
+        {!loading && error ? <div className="mt-8 rounded-3xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">{error}</div> : null}
+        {!loading && !error ? (
+          <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {featuredTemples.map((temple) => (
+              <TempleCard key={temple.id} temple={temple} compact />
+            ))}
+          </div>
+        ) : null}
       </section>
 
       <section className="section-shell py-6">
         <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
           <div>
             <h2 className="section-title">Quick Planner</h2>
-            <p className="section-copy">Use the planner to combine temple, budget, days, scenario steps, and route suggestions from the same repository source set.</p>
+            <p className="section-copy">Use the planner to combine temple, budget, days, schedule steps, and route suggestions from the backend planner endpoint.</p>
             <Link to="/planner" className="mt-5 inline-flex rounded-full bg-temple-deep px-5 py-3 text-sm font-semibold text-white transition hover:bg-temple-gold">Start planning</Link>
           </div>
           <div className="grid gap-3">
-            {getTopRoutes(4).map((route) => (
+            {(loading ? [] : routes.slice(0, 4)).map((route) => (
               <RouteCard key={route.id} route={route} />
             ))}
           </div>
