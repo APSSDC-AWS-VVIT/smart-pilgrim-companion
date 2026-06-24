@@ -1,65 +1,170 @@
+import math
+import re
+
 from models.budget import Budget
-from models.place import Place
-from models.route import Route
-from models.schedule import Schedule
 from models.temple import Temple
+from services.temple_service import get_routes_for_temple
 
 
-def get_planner_payload(temple_id):
-    temple = Temple.query.filter_by(temple_id=temple_id).first()
+def _normalize_budget_type(value):
+    if not value:
+        return None
+    normalized = str(value).strip().lower()
+    if normalized == "high":
+        return "premium"
+    return normalized
+
+
+def _resolve_temple(identifier):
+    if not identifier:
+        return None
+
+    normalized = str(identifier).strip()
+    temple = Temple.query.filter(
+        (Temple.temple_id.ilike(normalized)) | (Temple.temple_name.ilike(normalized))
+    ).first()
+    if temple:
+        return temple
+
+    wildcard = f"%{normalized}%"
+    return Temple.query.filter(
+        (Temple.temple_id.ilike(wildcard))
+        | (Temple.temple_name.ilike(wildcard))
+        | (Temple.district.ilike(wildcard))
+        | (Temple.location.ilike(wildcard))
+    ).first()
+
+
+def _serialize_budget(budget):
+    return {
+        "budget_id": budget.budget_id,
+        "budget_type": budget.budget_type,
+        "min_cost": budget.min_cost,
+        "max_cost": budget.max_cost,
+        "persons": budget.persons,
+        "days": budget.days,
+        "includes": budget.includes,
+    }
+
+
+def _select_budgets(temple_id, days, persons, budget_type):
+    budgets = Budget.query.filter_by(temple_id=temple_id).order_by(Budget.min_cost.asc()).all()
+    if not budgets:
+        return []
+
+    exact_matches = [
+        budget
+        for budget in budgets
+        if (days is None or budget.days == days)
+        and (persons is None or budget.persons == persons)
+        and (budget_type is None or budget.budget_type.lower() == budget_type)
+    ]
+    if exact_matches:
+        return exact_matches
+
+    type_matches = [budget for budget in budgets if budget_type is None or budget.budget_type.lower() == budget_type]
+    if type_matches:
+        return type_matches
+
+    day_matches = [budget for budget in budgets if days is None or budget.days == days]
+    if day_matches:
+        return day_matches
+
+    return budgets
+
+
+def _parse_cost_range(cost_text):
+    if not cost_text:
+        return None
+    numbers = [int(token.replace(",", "")) for token in re.findall(r"\d[\d,]*", str(cost_text))]
+    if not numbers:
+        return None
+    if len(numbers) == 1:
+        return numbers[0], numbers[0]
+    return min(numbers), max(numbers)
+
+
+def _choose_route(routes, budget_type):
+    if not routes:
+        return None
+
+    parsed_routes = []
+    for route in routes:
+        cost_range = _parse_cost_range(route.get("estimated_cost"))
+        if cost_range is None:
+            continue
+        parsed_routes.append((route, cost_range))
+
+    if not parsed_routes:
+        return routes[0]
+
+    normalized_budget = _normalize_budget_type(budget_type) or "medium"
+    if normalized_budget == "low":
+        return min(parsed_routes, key=lambda item: item[1][0])[0]
+    if normalized_budget in {"premium", "high"}:
+        return max(parsed_routes, key=lambda item: item[1][1])[0]
+
+    target_cost = sum((cost_range[0] + cost_range[1]) / 2 for _, cost_range in parsed_routes) / len(parsed_routes)
+    return min(parsed_routes, key=lambda item: abs(((item[1][0] + item[1][1]) / 2) - target_cost))[0]
+
+
+def _budget_summary(budget):
+    if not budget:
+        return "Budget data not available"
+    midpoint = math.ceil((budget.min_cost + budget.max_cost) / 2)
+    return str(midpoint)
+
+
+def _build_steps(temple, route, budget, days):
+    steps = []
+    if route:
+        steps.append(f"Reach {route.get('destination')} via {route.get('travel_mode')} from {route.get('source')}.")
+    if temple.best_visit_time:
+        steps.append(f"Visit during {temple.best_visit_time.lower()} for the best darshan window.")
+    if budget:
+        steps.append(f"Keep the plan within the {budget.budget_type} budget band for {days or budget.days} day(s).")
+    if temple.speciality:
+        steps.append(f"Focus on {temple.speciality} as part of the temple experience.")
+    return steps[:4]
+
+
+def get_planner_payload(identifier, days=None, budget_type=None, persons=None):
+    temple = _resolve_temple(identifier)
     if not temple:
         return None
+
+    selected_budget_type = _normalize_budget_type(budget_type)
+    if days is not None:
+        try:
+            days = int(days)
+        except (TypeError, ValueError):
+            days = None
+    if persons is not None:
+        try:
+            persons = int(persons)
+        except (TypeError, ValueError):
+            persons = None
+
+    budgets = _select_budgets(temple.temple_id, days, persons, selected_budget_type)
+    budget_choice = budgets[0] if budgets else None
+    routes = get_routes_for_temple(temple)
+    chosen_route = _choose_route(routes, selected_budget_type)
+
     return {
-        "temple": {
+        "temple": temple.temple_name,
+        "temple_details": {
             "temple_id": temple.temple_id,
             "temple_name": temple.temple_name,
             "state": temple.state,
             "district": temple.district,
             "location": temple.location,
             "description": temple.description,
+            "best_visit_time": temple.best_visit_time,
+            "speciality": temple.speciality,
         },
-        "budgets": [
-            {
-                "budget_id": budget.budget_id,
-                "budget_type": budget.budget_type,
-                "min_cost": budget.min_cost,
-                "max_cost": budget.max_cost,
-                "persons": budget.persons,
-                "days": budget.days,
-                "includes": budget.includes,
-            }
-            for budget in Budget.query.filter_by(temple_id=temple_id).order_by(Budget.min_cost.asc()).all()
-        ],
-        "schedules": [
-            {
-                "schedule_id": schedule.schedule_id,
-                "activity": schedule.activity,
-                "start_time": schedule.start_time,
-                "end_time": schedule.end_time,
-                "notes": schedule.notes,
-            }
-            for schedule in Schedule.query.filter_by(temple_id=temple_id).order_by(Schedule.schedule_id.asc()).all()
-        ],
-        "places": [
-            {
-                "place_id": place.place_id,
-                "place_name": place.place_name,
-                "place_type": place.place_type,
-                "distance_from_temple": place.distance_from_temple,
-                "description": place.description,
-            }
-            for place in Place.query.filter_by(temple_id=temple_id).order_by(Place.place_id.asc()).all()
-        ],
-        "routes": [
-            {
-                "route_id": route.route_id,
-                "source": route.source,
-                "destination": route.destination,
-                "travel_mode": route.travel_mode,
-                "duration": route.duration,
-                "estimated_cost": route.estimated_cost,
-                "notes": route.notes,
-            }
-            for route in Route.query.filter(Route.destination.ilike(temple.temple_name)).order_by(Route.route_id.asc()).all()
-        ],
+        "route": [chosen_route] if chosen_route else [],
+        "budget": [_serialize_budget(budget) for budget in budgets],
+        "steps": _build_steps(temple, chosen_route, budget_choice, days),
+        "best_time": temple.best_visit_time,
+        "estimated_budget": _budget_summary(budget_choice),
     }
