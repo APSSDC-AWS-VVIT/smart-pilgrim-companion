@@ -10,7 +10,7 @@ import AboutPage from './pages/AboutPage';
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-temple-warm text-temple-ink">
+    <div className="app-shell min-h-screen text-temple-ink">
       <Navbar />
       <main>
         <Routes>

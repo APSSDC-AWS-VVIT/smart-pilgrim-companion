@@ -64,30 +64,30 @@ export default function HomePage() {
   return (
     <>
       <section className="hero-border bg-temple-radial">
-        <div className="section-shell grid gap-10 py-14 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:py-20">
-          <div className="space-y-6">
-            <span className="inline-flex rounded-full border border-amber-200 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-temple-gold">
+        <div className="section-shell grid gap-10 py-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:py-20">
+          <div className="space-y-6 stagger">
+            <span className="inline-flex rounded-full border border-[color:var(--app-border)] bg-[color:var(--app-card)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-temple-gold">
               Cloud-based spiritual travel assistance
             </span>
             <div className="space-y-4">
               <h1 className="display-font max-w-3xl text-5xl font-bold leading-[0.95] text-temple-deep sm:text-6xl">
                 Plan temple journeys with validated data and a calm, modern travel experience.
               </h1>
-              <p className="max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">
+              <p className="max-w-2xl text-base leading-8 text-app-muted sm:text-lg">
                 Smart Pilgrim Companion turns the repository&apos;s temple, route, schedule, budget, and attraction records into a responsive frontend for Tirumala, Srisailam, and Srikalahasti.
               </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
               <SearchBar value={searchValue} onChange={setSearchValue} onSubmit={handleHomeSearch} placeholder="Search temple names, routes, or nearby places" />
-              <Link to="/planner" className="inline-flex items-center justify-center rounded-2xl bg-temple-deep px-6 py-3 text-sm font-semibold text-white shadow-glow transition hover:bg-temple-gold">
+              <Link to="/planner" className="button-primary inline-flex items-center justify-center rounded-2xl px-6 py-3 text-sm font-semibold shadow-glow">
                 Open planner
               </Link>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {highlightItems.map((item) => (
-                <div key={item} className="rounded-2xl border border-amber-100 bg-white px-4 py-4 text-sm text-temple-ink shadow-sm">
+                <div key={item} className="surface-card rounded-2xl px-4 py-4 text-sm text-temple-ink">
                   {item}
                 </div>
               ))}
@@ -95,14 +95,14 @@ export default function HomePage() {
           </div>
 
           <div className="grid gap-4">
-            <div className="rounded-[2rem] border border-amber-100 bg-white p-5 shadow-glow">
+            <div className="surface-card rounded-[2rem] p-5">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-temple-gold">Quick Planner</p>
-              <div className="mt-4 space-y-3 text-sm text-slate-600">
+              <div className="mt-4 space-y-3 text-sm text-app-muted">
                 <p>Choose a temple, select a budget band, and preview a suggested plan directly from the backend planner endpoint.</p>
-                <div className="rounded-2xl bg-amber-50 px-4 py-3 text-temple-deep">Mobile-first layout with clean cards and warm temple palette.</div>
+                <div className="surface-card-soft rounded-2xl px-4 py-3 text-temple-deep">Mobile-first layout with clean cards and warm temple palette.</div>
               </div>
             </div>
-            <div className="rounded-[2rem] border border-deep-100 bg-gradient-to-br from-temple-deep to-[#294e74] p-5 text-white shadow-glow">
+            <div className="rounded-[2rem] bg-gradient-to-br from-temple-deep to-temple-saffron p-5 text-white shadow-glow">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-200">Highlights</p>
               <div className="mt-4 space-y-3 text-sm leading-6 text-white/90">
                 <p>Temple listings, detailed views, route discovery, gallery browsing, and itinerary planning are now powered by the backend APIs.</p>
@@ -119,7 +119,7 @@ export default function HomePage() {
             <h2 className="section-title">Featured Temples</h2>
             <p className="section-copy">The three validated temple records are surfaced exactly as stored in the repository data files.</p>
           </div>
-          <Link to="/temples" className="hidden rounded-full border border-amber-200 px-4 py-2 text-sm font-semibold text-temple-deep transition hover:bg-white sm:inline-flex">
+          <Link to="/temples" className="button-secondary hidden rounded-full px-4 py-2 text-sm font-semibold sm:inline-flex">
             View all
           </Link>
         </div>
@@ -127,7 +127,7 @@ export default function HomePage() {
         {loading ? <div className="mt-8"><Loader /></div> : null}
         {!loading && error ? <div className="mt-8 rounded-3xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">{error}</div> : null}
         {!loading && !error ? (
-          <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <div className="stagger mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {featuredTemples.map((temple) => (
               <TempleCard key={temple.id} temple={temple} compact />
             ))}
@@ -140,7 +140,7 @@ export default function HomePage() {
           <div>
             <h2 className="section-title">Quick Planner</h2>
             <p className="section-copy">Use the planner to combine temple, budget, days, schedule steps, and route suggestions from the backend planner endpoint.</p>
-            <Link to="/planner" className="mt-5 inline-flex rounded-full bg-temple-deep px-5 py-3 text-sm font-semibold text-white transition hover:bg-temple-gold">Start planning</Link>
+            <Link to="/planner" className="button-primary mt-5 inline-flex rounded-full px-5 py-3 text-sm font-semibold">Start planning</Link>
           </div>
           <div className="grid gap-3">
             {(loading ? [] : routes.slice(0, 4)).map((route) => (
