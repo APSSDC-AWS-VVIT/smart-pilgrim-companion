@@ -1,6 +1,6 @@
 export default function BudgetCard({ item }) {
   return (
-    <div className="rounded-2xl border border-amber-100 bg-white p-4 shadow-sm">
+    <div className="surface-card rounded-2xl p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-temple-gold">{item.type}</p>
@@ -10,7 +10,7 @@ export default function BudgetCard({ item }) {
           {item.persons} {item.persons === 1 ? 'person' : 'people'}
         </span>
       </div>
-      <p className="mt-3 text-sm text-slate-600">₹{item.minCost.toLocaleString('en-IN')} - ₹{item.maxCost.toLocaleString('en-IN')} for {item.days} day(s)</p>
+      <p className="mt-3 text-sm text-app-muted">₹{item.minCost.toLocaleString('en-IN')} - ₹{item.maxCost.toLocaleString('en-IN')} for {item.days} day(s)</p>
     </div>
   );
 }

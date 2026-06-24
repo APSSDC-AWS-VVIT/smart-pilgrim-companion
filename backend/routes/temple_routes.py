@@ -1,20 +1,23 @@
-from flask import Blueprint, request
+from flask import Blueprint, jsonify, request
 
 from models.budget import Budget
 from models.place import Place
 from models.schedule import Schedule
 from models.temple import Temple
+from services.analytics_service import build_analytics
 from services.planner_service import get_planner_payload
+from services.recommendation_engine import build_recommendation
+from services.search_service import search_everything
 from services.temple_service import (
     get_all_routes,
-    get_all_schedules,
     get_all_temples,
     get_nearby_places,
     get_temple_by_id_or_name,
-    search_temples,
+    get_routes_for_temple,
     serialize_temples,
 )
 from utils.response import error_response, success_response
+from utils.validator import build_validation_report
 
 
 temple_bp = Blueprint("temple_bp", __name__)
@@ -140,20 +143,69 @@ def schedules():
 def search():
     query_text = request.args.get("q", "").strip()
     if not query_text:
-        return success_response([], "search query missing")
-    data = [
-        {"temple_name": temple.temple_name, "temple_id": temple.temple_id}
-        for temple in search_temples(query_text)
-    ]
-    return success_response(data, "search completed")
+        return success_response({"temple": {}, "routes": [], "places": [], "schedules": []}, "search query missing")
+    return success_response(search_everything(query_text), "search completed")
 
 
 @temple_bp.route("/planner", methods=["GET"])
 def planner():
-    temple_id = request.args.get("temple_id")
-    if not temple_id:
-        return error_response("temple_id is required", 400)
-    payload = get_planner_payload(temple_id)
+    temple_identifier = request.args.get("temple") or request.args.get("temple_id")
+    if not temple_identifier:
+        return error_response("temple is required", 400)
+    payload = get_planner_payload(
+        temple_identifier,
+        days=request.args.get("days"),
+        budget_type=request.args.get("budget"),
+        persons=request.args.get("persons"),
+    )
     if not payload:
         return error_response("temple not found", 404)
     return success_response(payload, "planner data fetched")
+
+
+@temple_bp.route("/recommendation", methods=["GET"])
+def recommendation():
+    payload = build_recommendation({
+        "temple": request.args.get("temple") or request.args.get("temple_id"),
+        "days": request.args.get("days"),
+        "budget": request.args.get("budget"),
+        "persons": request.args.get("persons"),
+    })
+    if not payload:
+        return error_response("temple not found", 404)
+    return success_response(payload, "recommendation generated")
+
+
+@temple_bp.route("/rank", methods=["GET"])
+def rank():
+    temples = get_all_temples()
+    max_budget_count = max((Budget.query.filter_by(temple_id=temple.temple_id).count() for temple in temples), default=1)
+    max_schedule_count = max((Schedule.query.filter_by(temple_id=temple.temple_id).count() for temple in temples), default=1)
+    max_route_count = max((len(get_routes_for_temple(temple)) for temple in temples), default=1)
+    ranking = []
+    for temple in temples:
+        budget_count = Budget.query.filter_by(temple_id=temple.temple_id).count()
+        schedule_count = Schedule.query.filter_by(temple_id=temple.temple_id).count()
+        route_count = len(get_routes_for_temple(temple))
+        place_count = len(get_nearby_places(temple.temple_id))
+        score = round(
+            (
+                (budget_count / max_budget_count) * 0.30
+                + (schedule_count / max_schedule_count) * 0.40
+                + (route_count / max_route_count) * 0.30
+            )
+            * 100
+        )
+        ranking.append({"temple": temple.temple_name, "score": score, "breakdown": {"budget_fit": budget_count, "time_fit": schedule_count, "route_fit": route_count, "places": place_count}})
+    ranking.sort(key=lambda item: (-item["score"], item["temple"]))
+    return success_response({"ranking": ranking}, "rank calculated")
+
+
+@temple_bp.route("/health", methods=["GET"])
+def health():
+    return jsonify(build_validation_report())
+
+
+@temple_bp.route("/analytics", methods=["GET"])
+def analytics():
+    return success_response(build_analytics(), "analytics generated")

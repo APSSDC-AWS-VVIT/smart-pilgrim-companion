@@ -94,11 +94,11 @@ export default function ExplorePage() {
           <h2 className="section-title">Nearby Attractions</h2>
           <div className="mt-4 grid gap-3">
             {temples.map((temple) => (
-              <div key={temple.id} className="rounded-3xl border border-amber-100 bg-white p-5 shadow-sm">
+              <div key={temple.id} className="surface-card rounded-3xl p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-temple-gold">{temple.name}</p>
                 <div className="mt-3 grid gap-2">
                   {(details.find((item) => item.id === temple.id)?.places || []).slice(0, 4).map((place) => (
-                    <div key={place.id} className="rounded-2xl bg-amber-50 px-4 py-3 text-sm text-temple-ink">
+                    <div key={place.id} className="surface-card-soft rounded-2xl px-4 py-3 text-sm text-temple-ink">
                       {place.name} · {place.distance}
                     </div>
                   ))}

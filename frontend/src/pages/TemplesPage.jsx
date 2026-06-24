@@ -72,14 +72,14 @@ export default function TemplesPage() {
       {!loading && error ? (
         <div className="mt-8 rounded-3xl border border-red-200 bg-red-50 p-6 text-sm text-red-700">
           <p>{error}</p>
-          <button type="button" onClick={retryLoad} className="mt-4 rounded-full bg-temple-deep px-4 py-2 font-semibold text-white">
+          <button type="button" onClick={retryLoad} className="button-primary mt-4 rounded-full px-4 py-2 font-semibold">
             Retry
           </button>
         </div>
       ) : null}
 
       {!loading && !error ? (
-        <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="stagger mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {temples.map((temple) => (
             <TempleCard key={temple.id} temple={temple} />
           ))}
@@ -87,7 +87,7 @@ export default function TemplesPage() {
       ) : null}
 
       {!loading && !error && temples.length === 0 ? (
-        <div className="mt-8 rounded-3xl border border-dashed border-amber-200 bg-white p-10 text-center text-slate-500">
+        <div className="mt-8 rounded-3xl border border-dashed border-amber-200 bg-white p-10 text-center text-app-muted">
           No temples matched the current search.
         </div>
       ) : null}

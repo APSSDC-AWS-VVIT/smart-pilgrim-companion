@@ -5,19 +5,20 @@ export default {
     extend: {
       colors: {
         temple: {
-          gold: '#c89b3c',
-          deep: '#17324d',
-          warm: '#fbf4e8',
-          saffron: '#f4b64f',
-          ink: '#0f2235',
-          muted: '#6b7280',
+          gold: '#D4AF37',
+          deep: '#2D5BFF',
+          warm: 'var(--app-card-soft)',
+          saffron: '#FF7A00',
+          ink: 'var(--app-text)',
+          muted: 'var(--app-muted)',
+          forest: '#3A7D44',
         },
       },
       boxShadow: {
-        glow: '0 20px 45px rgba(23, 50, 77, 0.12)',
+        glow: '0 20px 45px rgba(45, 91, 255, 0.12)',
       },
       backgroundImage: {
-        'temple-radial': 'radial-gradient(circle at top left, rgba(200, 155, 60, 0.22), transparent 36%), radial-gradient(circle at top right, rgba(23, 50, 77, 0.16), transparent 30%)',
+        'temple-radial': 'radial-gradient(circle at top left, rgba(255, 122, 0, 0.18), transparent 36%), radial-gradient(circle at top right, rgba(212, 175, 55, 0.18), transparent 30%)',
       },
     },
   },
