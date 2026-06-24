@@ -1,25 +1,86 @@
-import { Link, useParams, Navigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import BudgetCard from '../components/BudgetCard';
 import Gallery from '../components/Gallery';
 import Loader from '../components/Loader';
 import ScheduleCard from '../components/ScheduleCard';
-import { getTempleById, getBudgetsForTemple, getSchedulesForTemple, getPlacesForTemple } from '../data';
+import { getTempleById } from '../services/templeService';
 
 export default function TempleDetailsPage() {
   const { templeId } = useParams();
-  const temple = getTempleById(templeId);
+  const navigate = useNavigate();
+  const [temple, setTemple] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  if (!temple) {
-    return <Navigate to="/temples" replace />;
+  useEffect(() => {
+    let active = true;
+
+    async function loadTemple() {
+      setLoading(true);
+      setError('');
+
+      try {
+        const result = await getTempleById(templeId);
+        if (active) {
+          setTemple(result);
+        }
+      } catch (err) {
+        if (active) {
+          setError(err.status === 404 ? 'Temple not found' : err.message || 'Unable to load temple details.');
+          setTemple(null);
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadTemple();
+
+    return () => {
+      active = false;
+    };
+  }, [templeId]);
+
+  if (loading) {
+    return (
+      <section className="section-shell py-12">
+        <Loader />
+      </section>
+    );
   }
 
-  const schedules = getSchedulesForTemple(temple.id);
-  const budgets = getBudgetsForTemple(temple.id);
-  const places = getPlacesForTemple(temple.id);
+  if (error === 'Temple not found') {
+    return (
+      <section className="section-shell py-12">
+        <div className="rounded-3xl border border-dashed border-amber-200 bg-white p-10 text-center text-slate-500">
+          <p>Temple not found.</p>
+          <Link to="/temples" className="mt-4 inline-flex rounded-full bg-temple-deep px-4 py-2 text-sm font-semibold text-white">
+            Back to temples
+          </Link>
+        </div>
+      </section>
+    );
+  }
+
+  if (error || !temple) {
+    return (
+      <section className="section-shell py-12">
+        <div className="rounded-3xl border border-red-200 bg-red-50 p-6 text-red-700">
+          <p>{error || 'Unable to load temple details.'}</p>
+          <button type="button" onClick={() => navigate('/temples')} className="mt-4 rounded-full bg-temple-deep px-4 py-2 font-semibold text-white">
+            Back to temples
+          </button>
+        </div>
+      </section>
+    );
+  }
 
   const gallery = [
     { src: temple.image, alt: temple.name, label: `${temple.name} hero view` },
-    ...['gallery'].flatMap(() => []),
+    ...(temple.gallery || []).map((src, index) => ({ src, alt: temple.name, label: `${temple.name} gallery ${index + 1}` })),
   ];
 
   return (
@@ -64,7 +125,7 @@ export default function TempleDetailsPage() {
           <div>
             <h2 className="section-title">Schedules</h2>
             <div className="mt-4 grid gap-3">
-              {schedules.length ? schedules.map((item) => <ScheduleCard key={item.id} item={item} />) : <Loader />}
+              {temple.schedules.length ? temple.schedules.map((item) => <ScheduleCard key={item.id} item={item} />) : <div className="rounded-2xl border border-dashed border-amber-200 bg-white p-6 text-sm text-slate-500">No schedules available.</div>}
             </div>
           </div>
         </div>
@@ -73,7 +134,7 @@ export default function TempleDetailsPage() {
           <div>
             <h2 className="section-title">Nearby Places</h2>
             <div className="mt-4 grid gap-3">
-              {places.map((place) => (
+              {temple.places.map((place) => (
                 <div key={place.id} className="rounded-2xl border border-amber-100 bg-white p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div>
@@ -90,7 +151,7 @@ export default function TempleDetailsPage() {
           <div>
             <h2 className="section-title">Budget</h2>
             <div className="mt-4 grid gap-3">
-              {budgets.map((budget) => <BudgetCard key={budget.id} item={budget} />)}
+              {temple.budgets.length ? temple.budgets.map((budget) => <BudgetCard key={budget.id} item={budget} />) : <div className="rounded-2xl border border-dashed border-amber-200 bg-white p-6 text-sm text-slate-500">No budget options available.</div>}
             </div>
           </div>
 
@@ -98,11 +159,7 @@ export default function TempleDetailsPage() {
             <h2 className="section-title">Gallery</h2>
             <Gallery
               title={`${temple.name} views`}
-              images={[
-                { src: temple.image, alt: temple.name, label: temple.name },
-                { src: temple.image, alt: temple.name, label: `${temple.name} main view` },
-                { src: temple.image, alt: temple.name, label: `${temple.name} temple view` },
-              ]}
+              images={gallery.slice(0, 6)}
             />
           </div>
         </div>
