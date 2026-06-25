@@ -1,7 +1,5 @@
-const imageBase = '/assets/images';
-
-function asset(path) {
-  return `${imageBase}/${path}`;
+export function asset(path) {
+  return new URL(`../../public/assets/images/${path}`, import.meta.url).href;
 }
 
 export const templeImageSets = {
