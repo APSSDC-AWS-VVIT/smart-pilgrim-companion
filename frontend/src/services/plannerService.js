@@ -37,22 +37,24 @@ function normalizePlannerResponse(response) {
   };
 }
 
-export async function loadPlannerData({ templeId, budgetType, days, persons = 1 }) {
+export async function loadPlannerData({ templeId, temple, budgetType, days, persons = 1 }) {
+  const templeRequest = temple ? Promise.resolve({ data: temple }) : requestJson(`/temples/${encodeURIComponent(templeId)}`);
+
   const [plannerResponse, recommendationResponse, templeResponse, routesResponse] = await Promise.all([
     requestJson(`/planner${buildQueryString({ temple: templeId, days, budget: budgetType, persons })}`),
     requestJson(`/recommendation${buildQueryString({ temple: templeId, days, budget: budgetType, persons })}`),
-    requestJson(`/temples/${encodeURIComponent(templeId)}`),
+    templeRequest,
     requestJson('/routes'),
   ]);
 
   const planner = normalizePlannerResponse(plannerResponse);
   const recommendation = recommendationResponse?.data || {};
-  const temple = normalizeTemple(templeResponse.data);
+  const fetchedTemple = normalizeTemple(templeResponse.data);
   const allRoutes = safeArray(routesResponse.data).map((route) => normalizeRoute(route));
-  const destinationHint = `${temple?.name || ''} ${temple?.district || ''} ${temple?.location || ''}`.toLowerCase();
+  const destinationHint = `${fetchedTemple?.name || ''} ${fetchedTemple?.district || ''} ${fetchedTemple?.location || ''}`.toLowerCase();
   const matchingRoutes = allRoutes.filter((route) => {
     const routeText = `${route.source} ${route.destination} ${route.notes} ${route.mode}`.toLowerCase();
-    return routeText.includes(destinationHint) || route.destination === temple?.district || route.destination === temple?.name || route.destination === temple?.location;
+    return routeText.includes(destinationHint) || route.destination === fetchedTemple?.district || route.destination === fetchedTemple?.name || route.destination === fetchedTemple?.location;
   });
 
   const selectedRoute = planner.routes[0] || normalizeRoute(recommendation.route_details || null) || matchingRoutes[0] || null;
@@ -60,25 +62,25 @@ export async function loadPlannerData({ templeId, budgetType, days, persons = 1 
   const timeline = deriveTimeline(planner.steps);
 
   return {
-    temple,
-    templeName: temple?.name || planner.templeName || 'Temple',
+    temple: fetchedTemple,
+    templeName: fetchedTemple?.name || planner.templeName || 'Temple',
     selectedRoute,
     routeOptions: matchingRoutes.length ? matchingRoutes : planner.routes,
     budgetOptions: planner.budgets,
     selectedBudget,
     estimatedBudget: recommendation.estimated_budget || planner.estimatedBudget || formatMoney(selectedBudget?.minCost, selectedBudget?.maxCost),
-    bestTime: recommendation.best_time || planner.bestTime || temple?.bestVisitTime || '',
+    bestTime: recommendation.best_time || planner.bestTime || fetchedTemple?.bestVisitTime || '',
     routeSummary: selectedRoute ? `${selectedRoute.source} to ${selectedRoute.destination} via ${selectedRoute.mode} (${selectedRoute.duration})` : 'Generating best available pilgrimage plan…',
     travelDuration: selectedRoute?.duration || '',
     travelCost: selectedRoute?.estimatedCost || '',
     recommendation,
     journeySteps: planner.steps,
     timeline,
-    nearbyPlaces: safeArray(temple?.places).map((place) => normalizePlace(place)),
-    schedules: safeArray(temple?.schedules).map((schedule) => normalizeSchedule(schedule)),
+    nearbyPlaces: safeArray(fetchedTemple?.places).map((place) => normalizePlace(place)),
+    schedules: safeArray(fetchedTemple?.schedules).map((schedule) => normalizeSchedule(schedule)),
     smartTips: [
       recommendation.travel_tip,
-      temple?.bestVisitTime ? `Best visit window: ${temple.bestVisitTime}.` : '',
+      fetchedTemple?.bestVisitTime ? `Best visit window: ${fetchedTemple.bestVisitTime}.` : '',
       selectedBudget ? `Budget fit: ${selectedBudget.type.toUpperCase()} (${formatMoney(selectedBudget.minCost, selectedBudget.maxCost)}).` : '',
     ].filter(Boolean),
     riskNotes: [

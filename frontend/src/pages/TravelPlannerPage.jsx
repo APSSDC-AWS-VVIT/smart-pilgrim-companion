@@ -14,6 +14,28 @@ export default function TravelPlannerPage() {
   const [loadingPlan, setLoadingPlan] = useState(true);
   const [error, setError] = useState('');
 
+  const refreshPlanner = async (currentTemple = selectedTemple) => {
+    if (!currentTemple) {
+      setPlan(null);
+      setLoadingPlan(false);
+      setError('Select a temple to generate a plan.');
+      return;
+    }
+
+    setLoadingPlan(true);
+    setError('');
+
+    try {
+      const result = await loadPlannerData({ templeId: currentTemple.id, temple: currentTemple, budgetType, days, persons: 1 });
+      setPlan(result);
+    } catch (err) {
+      setPlan(null);
+      setError(err.message || 'Generating best available pilgrimage plan…');
+    } finally {
+      setLoadingPlan(false);
+    }
+  };
+
   useEffect(() => {
     let active = true;
 
@@ -46,23 +68,8 @@ export default function TravelPlannerPage() {
     let active = true;
 
     async function loadPlan() {
-      setLoadingPlan(true);
-      setError('');
-
-      try {
-        const result = await loadPlannerData({ templeId: selectedTempleId, budgetType, days, persons: 1 });
-        if (active) {
-          setPlan(result);
-        }
-      } catch (err) {
-        if (active) {
-          setPlan(null);
-          setError(err.message || 'Generating best available pilgrimage plan…');
-        }
-      } finally {
-        if (active) {
-          setLoadingPlan(false);
-        }
+      if (active) {
+        await refreshPlanner(selectedTemple);
       }
     }
 
@@ -71,7 +78,7 @@ export default function TravelPlannerPage() {
     return () => {
       active = false;
     };
-  }, [selectedTempleId, budgetType, days]);
+  }, [selectedTemple, budgetType, days]);
 
   const templeOptions = useMemo(() => temples.map((temple) => ({ value: temple.id, label: temple.name })), [temples]);
   const selectedTemple = useMemo(() => temples.find((temple) => temple.id === selectedTempleId) || temples[0] || null, [temples, selectedTempleId]);
@@ -121,7 +128,7 @@ export default function TravelPlannerPage() {
               <input type="number" min="1" max="7" value={days} onChange={(event) => setDays(Number(event.target.value))} className="input-shell mt-2 w-full rounded-2xl px-4 py-3 outline-none" />
             </label>
 
-            <button type="button" onClick={() => setDays((current) => current)} className="button-primary inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold">
+            <button type="button" onClick={() => refreshPlanner(selectedTemple)} className="button-primary inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold">
               Generate Plan
             </button>
 
