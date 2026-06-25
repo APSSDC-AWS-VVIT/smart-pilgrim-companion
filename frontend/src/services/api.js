@@ -1,12 +1,85 @@
-const DEFAULT_API_BASE_URL = 'http://localhost:8000/api';
+import axios from 'axios';
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
+const DEFAULT_API_URL = 'http://localhost:5000';
+const rawApiUrl = import.meta.env.VITE_API_URL || DEFAULT_API_URL;
+const normalizedApiUrl = rawApiUrl.replace(/\/$/, '');
+
+export const API_BASE_URL = `${normalizedApiUrl}/api`;
+
+const API = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 15000,
+  headers: {
+    Accept: 'application/json',
+  },
+});
+
+const loadingListeners = new Set();
+let activeRequests = 0;
+
+function emitLoadingState() {
+  const isLoading = activeRequests > 0;
+  loadingListeners.forEach((listener) => {
+    try {
+      listener(isLoading);
+    } catch {
+      // Ignore listener failures so request handling stays resilient.
+    }
+  });
+}
+
+export function subscribeApiLoading(listener) {
+  if (typeof listener !== 'function') {
+    return () => {};
+  }
+
+  loadingListeners.add(listener);
+  listener(activeRequests > 0);
+
+  return () => {
+    loadingListeners.delete(listener);
+  };
+}
+
+API.interceptors.request.use(
+  (config) => {
+    activeRequests += 1;
+    emitLoadingState();
+    return config;
+  },
+  (error) => {
+    activeRequests = Math.max(0, activeRequests - 1);
+    emitLoadingState();
+    return Promise.reject(error);
+  },
+);
+
+API.interceptors.response.use(
+  (response) => {
+    activeRequests = Math.max(0, activeRequests - 1);
+    emitLoadingState();
+    return response;
+  },
+  (error) => {
+    activeRequests = Math.max(0, activeRequests - 1);
+    emitLoadingState();
+
+    const payload = error?.response?.data || {};
+    const status = error?.response?.status;
+    const message = payload?.message || payload?.error || error.message || 'Request failed';
+    const normalizedError = new Error(message);
+    normalizedError.status = status;
+    normalizedError.payload = payload;
+    normalizedError.cause = error;
+    return Promise.reject(normalizedError);
+  },
+);
 
 const pendingRequests = new Map();
 
 function buildRequestKey(path, options) {
   const method = (options.method || 'GET').toUpperCase();
-  const body = typeof options.body === 'string' ? options.body : '';
+  const body = typeof options.data === 'string' ? options.data : '';
   return `${method}:${path}:${body}`;
 }
 
@@ -15,32 +88,22 @@ export async function requestJson(path, options = {}) {
     method: 'GET',
     ...options,
     headers: {
-      Accept: 'application/json',
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
       ...(options.headers || {}),
     },
   };
   const requestKey = buildRequestKey(path, requestOptions);
-  const requestUrl = `${API_BASE_URL}${path}`;
 
   if (requestOptions.method.toUpperCase() === 'GET' && pendingRequests.has(requestKey)) {
     return pendingRequests.get(requestKey);
   }
 
-  const requestPromise = (async () => {
-    const response = await fetch(requestUrl, requestOptions);
-    const payload = await response.json().catch(() => ({}));
-
-    if (!response.ok) {
-      const message = payload?.message || payload?.error || `Request failed with status ${response.status}`;
-      const error = new Error(message);
-      error.status = response.status;
-      error.payload = payload;
-      throw error;
-    }
-
-    return payload;
-  })();
+  const requestPromise = API.request({
+    url: path,
+    method: requestOptions.method,
+    params: requestOptions.params,
+    data: requestOptions.data,
+    headers: requestOptions.headers,
+  }).then((response) => response.data);
 
   if (requestOptions.method.toUpperCase() === 'GET') {
     pendingRequests.set(requestKey, requestPromise);

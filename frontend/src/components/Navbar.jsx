@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle';
+import { asset } from '../data/imagePaths';
 
 const linkClass = ({ isActive }) =>
   [
@@ -36,7 +37,7 @@ export default function Navbar() {
       <div className="section-shell flex items-center justify-between gap-4 py-4">
         <Link to="/" className="group flex min-w-0 items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl border border-[color:var(--app-border)] bg-white shadow-glow">
-            <img src="/assets/images/SmartPiligrimCompanionLogo.png" alt="Smart Pilgrim Companion logo" className="h-full w-full object-cover" />
+            <img src={asset('SmartPiligrimCompanionLogo.png')} alt="Smart Pilgrim Companion logo" className="h-full w-full object-cover" />
           </div>
           <div className="min-w-0">
             <p className="display-font truncate text-lg font-bold tracking-wide text-temple-deep">Smart Pilgrim Companion</p>

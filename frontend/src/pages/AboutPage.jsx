@@ -1,3 +1,5 @@
+import { asset } from '../data/imagePaths';
+
 export default function AboutPage() {
   const teamMembers = [
     ['1', '23BQ1A4201', 'ADHIMULAM BHARGAV SAI VISWANATH', 'M'],
@@ -8,9 +10,9 @@ export default function AboutPage() {
   ];
 
   const logos = [
-    { src: '/assets/images/ap_emblem.png', alt: 'Andhra Pradesh emblem' },
-    { src: '/assets/images/aws_naipunyam_ap_logo.png', alt: 'AWS Naipunyam Andhra Pradesh logo' },
-    { src: '/assets/images/vvit_logo.png', alt: 'VVIT logo' },
+    { src: asset('ap_emblem.png'), alt: 'Andhra Pradesh emblem' },
+    { src: asset('aws_naipunyam_ap_logo.png'), alt: 'AWS Naipunyam Andhra Pradesh logo' },
+    { src: asset('vvit_logo.png'), alt: 'VVIT logo' },
   ];
 
   return (
