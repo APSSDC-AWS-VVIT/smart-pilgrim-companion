@@ -1,15 +1,55 @@
-import os
+# import os
 
+# from flask import Flask, jsonify
+# from flask_cors import CORS
+# from config import Config
+# from models import db
+# from routes.temple_routes import temple_bp
+
+
+# def create_app():
+#     app = Flask(__name__)
+#     app.config.from_object(Config)
+#     db.init_app(app)
+#     CORS(app)
+
+#     app.register_blueprint(temple_bp, url_prefix="/api")
+
+#     @app.route("/")
+#     def health_check():
+#         return jsonify({
+#             "status": "success",
+#             "message": "Smart Pilgrim Companion backend is running",
+#             "data": {}
+#         })
+
+#     return app
+
+
+# app = create_app()
+
+
+# if __name__ == "__main__":
+#     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8000)), debug=True)
+
+import os
 from flask import Flask, jsonify
 from flask_cors import CORS
+from dotenv import load_dotenv
+
+# Ensure configuration environment parameters load early
+load_dotenv()
+
 from config import Config
 from models import db
 from routes.temple_routes import temple_bp
 
-
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
+
+    print(f"📡 Active Connection Path -> {app.config['SQLALCHEMY_DATABASE_URI']}")
+    
     db.init_app(app)
     CORS(app)
 
@@ -25,9 +65,7 @@ def create_app():
 
     return app
 
-
 app = create_app()
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8000)), debug=True)
