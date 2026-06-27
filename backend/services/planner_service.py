@@ -6,6 +6,7 @@ from services.temple_service import get_routes_for_temple, get_nearby_places
 from services.analytics_service import increment_analytic_metric
 from models.place import Place
 
+
 def _normalize_budget_type(value):
     if not value:
         return "low"
