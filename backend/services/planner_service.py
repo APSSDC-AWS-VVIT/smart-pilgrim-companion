@@ -142,20 +142,6 @@ def get_planner_payload(identifier, days=None, budget_type=None, persons=None):
             {"order": i + 1, "title": "Itinerary Milestone", "detail": step}
             for i, step in enumerate(_build_steps(temple, chosen_route, budget_choice, days))
         ],
-        # "nearbyPlaces": [
-        #     {"id": f"P{i}", "name": p.place_name, "type": p.place_type, "distance": p.distance_from_temple, "description": p.description}
-        #     for i, p in enumerate(temple.places)
-        # ] if hasattr(temple, 'places') and temple.places else [],
-        # "nearbyPlaces": [
-        #     {
-        #         "id": str(p.place_id), 
-        #         "name": str(p.place_name),            # Matches frontend place.name
-        #         "type": str(p.place_type),            # Matches frontend place.type
-        #         "distance": str(p.distance_from_temple), # Matches frontend place.distance
-        #         "description": str(p.description)
-        #     }
-        #     for p in get_nearby_places(temple.temple_id)
-        # ],
         "nearbyPlaces": [
             {
                 "id": str(p.place_id), 
