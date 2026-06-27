@@ -5,6 +5,7 @@ import { loadPlannerData } from '../services/plannerService';
 import { getTemples } from '../services/templeService';
 
 export default function TravelPlannerPage() {
+  // 1. ALL STATES FIRST
   const [selectedTempleId, setSelectedTempleId] = useState('T001');
   const [budgetType, setBudgetType] = useState('low');
   const [days, setDays] = useState(3);
@@ -14,6 +15,11 @@ export default function TravelPlannerPage() {
   const [loadingPlan, setLoadingPlan] = useState(true);
   const [error, setError] = useState('');
 
+  // 2. MEMOIZED VALUES NEXT (Declared safely before hooks read them)
+  const templeOptions = useMemo(() => temples.map((temple) => ({ value: temple.id, label: temple.name })), [temples]);
+  const selectedTemple = useMemo(() => temples.find((temple) => temple.id === selectedTempleId) || temples[0] || null, [temples, selectedTempleId]);
+
+  // 3. FUNCTIONS
   const refreshPlanner = async (currentTemple = selectedTemple) => {
     if (!currentTemple) {
       setPlan(null);
@@ -36,6 +42,7 @@ export default function TravelPlannerPage() {
     }
   };
 
+  // 4. EFFECTS AT THE BOTTOM
   useEffect(() => {
     let active = true;
 
@@ -80,8 +87,7 @@ export default function TravelPlannerPage() {
     };
   }, [selectedTemple, budgetType, days]);
 
-  const templeOptions = useMemo(() => temples.map((temple) => ({ value: temple.id, label: temple.name })), [temples]);
-  const selectedTemple = useMemo(() => temples.find((temple) => temple.id === selectedTempleId) || temples[0] || null, [temples, selectedTempleId]);
+  // 5. REMAINING DECONSTRUCTIONS
   const routeOptions = plan?.routeOptions || [];
   const budgetOptions = plan?.budgetOptions || [];
   const timelineSteps = plan?.timeline || [];
