@@ -35,7 +35,7 @@ function normalizePlannerResponse(response) {
     budgets: safeArray(data.budget).map((budget) => normalizeBudget(budget)),
     steps: safeArray(data.steps),
     // ✅ FIX 1: Capture the array from the backend payload response right here
-    nearbyPlaces: safeArray(data.nearbyPlaces)
+    nearbyPlaces: safeArray(data.nearbyPlaces).map((place) => normalizePlace(place))
   };
 }
 
