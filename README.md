@@ -1,2 +1,11 @@
-# smart-pilgrim-companion
-Cloud-Based Spiritual Travel &amp; Temple Assistance Platform using AWS developed under APSSDC AWS Cloud &amp; DevOps Internship Program.
+---
+PROJECT STATUS:
+Feature Freeze Enabled
+
+Only:
+- Deployment Configuration
+- Bug Fixes
+- Production Documentation
+
+No new features are permitted beyond this checkpoint.
+---
