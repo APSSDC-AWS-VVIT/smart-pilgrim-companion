@@ -2,7 +2,7 @@ import math
 import re
 from models.budget import Budget
 from models.temple import Temple
-from services.temple_service import get_routes_for_temple
+from services.temple_service import get_routes_for_temple, get_nearby_places
 from services.analytics_service import increment_analytic_metric
 from models.place import Place
 
@@ -147,13 +147,13 @@ def get_planner_payload(identifier, days=None, budget_type=None, persons=None):
         # ] if hasattr(temple, 'places') and temple.places else [],
         "nearbyPlaces": [
             {
-                "id": p.place_id, 
+                "id": str(p.place_id), 
                 "name": p.place_name, 
                 "type": p.place_type, 
                 "distance": p.distance_from_temple, 
                 "description": p.description
             }
-            for p in Place.query.filter_by(temple_id=temple.temple_id).order_by(Place.place_id.asc()).all()
+            for p in get_nearby_places(temple.temple_id)
         ],
         "smartTips": [ai_node["smart_tip"]],
         "riskNotes": ["Book darshan early to reduce waiting time.", ai_node["smart_tip"], f"Route note: {chosen_route.get('notes', 'N/A')}" if chosen_route else "N/A"],
