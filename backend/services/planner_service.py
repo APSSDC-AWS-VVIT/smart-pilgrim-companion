@@ -146,15 +146,25 @@ def get_planner_payload(identifier, days=None, budget_type=None, persons=None):
         #     {"id": f"P{i}", "name": p.place_name, "type": p.place_type, "distance": p.distance_from_temple, "description": p.description}
         #     for i, p in enumerate(temple.places)
         # ] if hasattr(temple, 'places') and temple.places else [],
+        # "nearbyPlaces": [
+        #     {
+        #         "id": str(p.place_id), 
+        #         "name": str(p.place_name),            # Matches frontend place.name
+        #         "type": str(p.place_type),            # Matches frontend place.type
+        #         "distance": str(p.distance_from_temple), # Matches frontend place.distance
+        #         "description": str(p.description)
+        #     }
+        #     for p in get_nearby_places(temple.temple_id)
+        # ],
         "nearbyPlaces": [
             {
                 "id": str(p.place_id), 
-                "name": str(p.place_name),            # Matches frontend place.name
-                "type": str(p.place_type),            # Matches frontend place.type
-                "distance": str(p.distance_from_temple), # Matches frontend place.distance
+                "name": str(p.place_name),            
+                "type": str(p.place_type),            
+                "distance": str(p.distance_from_temple), 
                 "description": str(p.description)
             }
-            for p in get_nearby_places(temple.temple_id)
+            for p in Place.query.filter_by(temple_id=temple.temple_id).all()
         ],
         "smartTips": [ai_node["smart_tip"]],
         "riskNotes": ["Book darshan early to reduce waiting time.", ai_node["smart_tip"], f"Route note: {chosen_route.get('notes', 'N/A')}" if chosen_route else "N/A"],
