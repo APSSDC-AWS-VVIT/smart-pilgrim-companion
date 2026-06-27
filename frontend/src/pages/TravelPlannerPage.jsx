@@ -87,15 +87,13 @@ export default function TravelPlannerPage() {
     };
   }, [selectedTemple, budgetType, days]);
 
-  // 5. REMAINING DECONSTRUCTIONS (Properly unpacking the backend .data object envelope)
-  const planData = plan?.data || plan;
-
-  const routeOptions = planData?.routeOptions || [];
-  const budgetOptions = planData?.budgetOptions || [];
-  const timelineSteps = planData?.timeline || [];
-  const nearbyPlaces = plan?.data?.nearbyPlaces || planData?.nearbyPlaces || [];
-  const smartTips = planData?.smartTips || [];
-  const riskNotes = planData?.riskNotes || [];
+  // 5. REMAINING DECONSTRUCTIONS (Aligned directly with the service mapper schema)
+  const routeOptions = plan?.routeOptions || [];
+  const budgetOptions = plan?.budgetOptions || [];
+  const timelineSteps = plan?.timeline || [];
+  const nearbyPlaces = plan?.nearbyPlaces || []; // ✅ Crucial fix: Pull straight from flat mapped service object
+  const smartTips = plan?.smartTips || [];
+  const riskNotes = plan?.riskNotes || [];
 
   return (
     <section className="section-shell py-12">
