@@ -458,10 +458,20 @@ def get_planner_payload(identifier, days=None, budget_type=None, persons=None):
             {"order": i + 1, "title": "Itinerary Milestone", "detail": step}
             for i, step in enumerate(_build_steps(temple, chosen_route, budget_choice, days))
         ],
+        # "nearbyPlaces": [
+        #     {"id": f"P{i}", "name": p.place_name, "type": p.place_type, "distance": p.distance_from_temple, "description": p.description}
+        #     for i, p in enumerate(temple.places)
+        # ] if hasattr(temple, 'places') and temple.places else [],
         "nearbyPlaces": [
-            {"id": f"P{i}", "name": p.place_name, "type": p.place_type, "distance": p.distance_from_temple, "description": p.description}
-            for i, p in enumerate(temple.places)
-        ] if hasattr(temple, 'places') and temple.places else [],
+            {
+                "id": p.place_id, 
+                "name": p.place_name, 
+                "type": p.place_type, 
+                "distance": p.distance_from_temple, 
+                "description": p.description
+            }
+            for p in Place.query.filter_by(temple_id=temple.temple_id).order_by(Place.place_id.asc()).all()
+        ],
         "smartTips": [ai_node["smart_tip"]],
         "riskNotes": ["Book darshan early to reduce waiting time.", ai_node["smart_tip"], f"Route note: {chosen_route.get('notes', 'N/A')}" if chosen_route else "N/A"],
         "steps": _build_steps(temple, chosen_route, budget_choice, days),
