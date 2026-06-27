@@ -25,7 +25,8 @@ function formatMoney(minCost, maxCost) {
 }
 
 function normalizePlannerResponse(response) {
-  const data = response?.data || {};
+  // ✅ FIX: Extract from response.data.data to drill past the structural framework wrapper
+  const data = response?.data?.data || response?.data || response || {};
   return {
     temple: data.temple_details ? normalizeTemple(data.temple_details) : null,
     templeName: data.temple_details?.temple_name || data.temple || '',
@@ -34,7 +35,6 @@ function normalizePlannerResponse(response) {
     routes: safeArray(data.route).map((route) => normalizeRoute(route)),
     budgets: safeArray(data.budget).map((budget) => normalizeBudget(budget)),
     steps: safeArray(data.steps),
-    // ✅ FIX 1: Keep raw data values directly without passing through normalizePlace template destroyer
     nearbyPlaces: safeArray(data.nearbyPlaces)
   };
 }
