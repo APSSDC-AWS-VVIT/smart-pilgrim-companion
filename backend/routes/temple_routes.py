@@ -215,7 +215,7 @@ from models.budget import Budget
 from models.place import Place
 from models.schedule import Schedule
 from models.temple import Temple
-from services.analytics_service import build_analytics
+from services.analytics_service import build_analytics, get_analytics_summary_data  # Clean explicit top-level import
 from services.planner_service import get_planner_payload
 from services.recommendation_engine import build_recommendation
 from services.search_service import search_everything
@@ -341,8 +341,7 @@ def health():
 def analytics():
     return success_response(build_analytics(), "analytics generated")
 
-
 @temple_bp.route("/analytics/summary", methods=["GET"])
-def analytics_summary():
-    from services.analytics_service import get_analytics_summary_data
-    return success_response(get_analytics_summary_data(), "analytics summary fetched")
+def analytics_summary_route():  # Renamed to completely avoid namespace shadowing
+    data = get_analytics_summary_data()
+    return success_response(data, "analytics summary fetched")
