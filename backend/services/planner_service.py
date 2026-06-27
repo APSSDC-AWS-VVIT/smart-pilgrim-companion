@@ -149,10 +149,10 @@ def get_planner_payload(identifier, days=None, budget_type=None, persons=None):
         "nearbyPlaces": [
             {
                 "id": str(p.place_id), 
-                "name": p.place_name, 
-                "type": p.place_type, 
-                "distance": p.distance_from_temple, 
-                "description": p.description
+                "name": str(p.place_name), 
+                "type": str(p.place_type), 
+                "distance": str(p.distance_from_temple), 
+                "description": str(p.description)
             }
             for p in get_nearby_places(temple.temple_id)
         ],
