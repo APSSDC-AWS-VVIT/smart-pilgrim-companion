@@ -1,5 +1,5 @@
 import { buildQueryString, requestJson } from './api';
-import { normalizeBudget, normalizePlace, normalizeRoute, normalizeSchedule, normalizeTemple } from './mappers';
+import { normalizeBudget, normalizeRoute, normalizeSchedule, normalizeTemple } from './mappers';
 
 function safeArray(value) {
   return Array.isArray(value) ? value : [];
@@ -34,7 +34,7 @@ function normalizePlannerResponse(response) {
     routes: safeArray(data.route).map((route) => normalizeRoute(route)),
     budgets: safeArray(data.budget).map((budget) => normalizeBudget(budget)),
     steps: safeArray(data.steps),
-    // ✅ FIX 1: Capture the array from the backend payload response right here
+    // ✅ FIX 1: Keep raw data values directly without passing through normalizePlace template destroyer
     nearbyPlaces: safeArray(data.nearbyPlaces)
   };
 }
@@ -78,7 +78,7 @@ export async function loadPlannerData({ templeId, temple, budgetType, days, pers
     recommendation,
     journeySteps: planner.steps,
     timeline,
-    // ✅ FIX 2: Map the processed items directly from the normalized response object
+    // ✅ FIX 2: Pass down the flat, clean array records smoothly
     nearbyPlaces: planner.nearbyPlaces,
     schedules: safeArray(fetchedTemple?.schedules).map((schedule) => normalizeSchedule(schedule)),
     smartTips: [
