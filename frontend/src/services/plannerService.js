@@ -76,7 +76,8 @@ export async function loadPlannerData({ templeId, temple, budgetType, days, pers
     recommendation,
     journeySteps: planner.steps,
     timeline,
-    nearbyPlaces: safeArray(fetchedTemple?.places).map((place) => normalizePlace(place)),
+    // ✅ FIX: Change this line to read straight from the planner API payload data array instead of fetchedTemple
+    nearbyPlaces: safeArray(plannerResponse?.data?.nearbyPlaces || plannerResponse?.nearbyPlaces).map((place) => normalizePlace(place)),
     schedules: safeArray(fetchedTemple?.schedules).map((schedule) => normalizeSchedule(schedule)),
     smartTips: [
       recommendation.travel_tip,
