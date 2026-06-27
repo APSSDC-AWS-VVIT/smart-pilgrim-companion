@@ -87,13 +87,23 @@ export default function TravelPlannerPage() {
     };
   }, [selectedTemple, budgetType, days]);
 
-  // 5. REMAINING DECONSTRUCTIONS
-  const routeOptions = plan?.routeOptions || [];
-  const budgetOptions = plan?.budgetOptions || [];
-  const timelineSteps = plan?.timeline || [];
-  const nearbyPlaces = plan?.data?.nearbyPlaces || plan?.nearbyPlaces || [];
-  const smartTips = plan?.smartTips || [];
-  const riskNotes = plan?.riskNotes || [];
+  // // 5. REMAINING DECONSTRUCTIONS
+  // const routeOptions = plan?.routeOptions || [];
+  // const budgetOptions = plan?.budgetOptions || [];
+  // const timelineSteps = plan?.timeline || [];
+  // const nearbyPlaces = plan?.data?.nearbyPlaces || plan?.nearbyPlaces || [];
+  // const smartTips = plan?.smartTips || [];
+  // const riskNotes = plan?.riskNotes || [];
+
+  // 5. REMAINING DECONSTRUCTIONS (Properly unpacking the backend .data object envelope)
+  const planData = plan?.data || plan;
+
+  const routeOptions = planData?.routeOptions || [];
+  const budgetOptions = planData?.budgetOptions || [];
+  const timelineSteps = planData?.timeline || [];
+  const nearbyPlaces = planData?.nearbyPlaces || [];
+  const smartTips = planData?.smartTips || [];
+  const riskNotes = planData?.riskNotes || [];
 
   return (
     <section className="section-shell py-12">
