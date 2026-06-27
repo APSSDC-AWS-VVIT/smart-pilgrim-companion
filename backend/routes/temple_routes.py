@@ -340,3 +340,9 @@ def health():
 @temple_bp.route("/analytics", methods=["GET"])
 def analytics():
     return success_response(build_analytics(), "analytics generated")
+
+
+@temple_bp.route("/analytics/summary", methods=["GET"])
+def analytics_summary():
+    from services.analytics_service import get_analytics_summary_data
+    return success_response(get_analytics_summary_data(), "analytics summary fetched")
