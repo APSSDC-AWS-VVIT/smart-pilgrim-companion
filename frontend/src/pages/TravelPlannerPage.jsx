@@ -93,7 +93,7 @@ export default function TravelPlannerPage() {
   const routeOptions = planData?.routeOptions || [];
   const budgetOptions = planData?.budgetOptions || [];
   const timelineSteps = planData?.timeline || [];
-  const nearbyPlaces = planData?.nearbyPlaces || [];
+  const nearbyPlaces = plan?.data?.nearbyPlaces || planData?.nearbyPlaces || [];
   const smartTips = planData?.smartTips || [];
   const riskNotes = planData?.riskNotes || [];
 
