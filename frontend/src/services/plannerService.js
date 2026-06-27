@@ -34,6 +34,8 @@ function normalizePlannerResponse(response) {
     routes: safeArray(data.route).map((route) => normalizeRoute(route)),
     budgets: safeArray(data.budget).map((budget) => normalizeBudget(budget)),
     steps: safeArray(data.steps),
+    // ✅ FIX 1: Capture the array from the backend payload response right here
+    nearbyPlaces: safeArray(data.nearbyPlaces)
   };
 }
 
@@ -76,8 +78,8 @@ export async function loadPlannerData({ templeId, temple, budgetType, days, pers
     recommendation,
     journeySteps: planner.steps,
     timeline,
-    // ✅ FIX: Change this line to read straight from the planner API payload data array instead of fetchedTemple
-    nearbyPlaces: safeArray(plannerResponse?.data?.nearbyPlaces || plannerResponse?.nearbyPlaces).map((place) => normalizePlace(place)),
+    // ✅ FIX 2: Map the processed items directly from the normalized response object
+    nearbyPlaces: planner.nearbyPlaces,
     schedules: safeArray(fetchedTemple?.schedules).map((schedule) => normalizeSchedule(schedule)),
     smartTips: [
       recommendation.travel_tip,
