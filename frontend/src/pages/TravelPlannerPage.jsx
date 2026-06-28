@@ -270,7 +270,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import PlannerCard from '../components/PlannerCard';
 import Loader from '../components/Loader';
-import { loadPlannerData } from '../services/plannerService';
+import { loadPlannerData, formatMoney } from '../services/plannerService';
 import { getTemples } from '../services/templeService';
 
 export default function TravelPlannerPage() {
