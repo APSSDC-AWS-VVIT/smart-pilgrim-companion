@@ -112,7 +112,7 @@ function deriveTimeline(steps) {
   }));
 }
 
-function formatMoney(minCost, maxCost) {
+export function formatMoney(minCost, maxCost) {
   if (minCost === undefined || maxCost === undefined) {
     return '';
   }
