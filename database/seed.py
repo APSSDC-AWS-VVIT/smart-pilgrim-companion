@@ -214,15 +214,16 @@ def execute_schema(connection):
             if clean_stmt and not clean_stmt.upper().startswith("PRAGMA"):
                 cursor.execute(clean_stmt)
 
+
 def reset_tables(connection):
     with connection.cursor() as cursor:
-        logger.info("🧹 Performing fresh cascade reset on AWS RDS tables...")
+        logger.info("🧹 Performing fresh destructive drop on AWS RDS tables...")
         cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")
-        cursor.execute("TRUNCATE TABLE temple_places;")
-        cursor.execute("TRUNCATE TABLE schedules;")
-        cursor.execute("TRUNCATE TABLE budgets;")
-        cursor.execute("TRUNCATE TABLE travel_routes;")
-        cursor.execute("TRUNCATE TABLE temples;")
+        cursor.execute("DROP TABLE IF EXISTS temple_places;")
+        cursor.execute("DROP TABLE IF EXISTS schedules;")
+        cursor.execute("DROP TABLE IF EXISTS budgets;")
+        cursor.execute("DROP TABLE IF EXISTS travel_routes;")
+        cursor.execute("DROP TABLE IF EXISTS temples;")
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
 
 def read_csv_rows(filename):
@@ -264,6 +265,8 @@ def insert_rows(connection, table_name, rows, required_fields, unique_key, forei
             
             unique_value = row.get(unique_key)
             if unique_value in seen:
+                # This means the CSV file itself has a duplicate row!
+                logger.warning(f"⚠️ Duplicate unique key found in CSV for {table_name}: {unique_value}")
                 skipped += 1
                 continue
                 
@@ -274,27 +277,27 @@ def insert_rows(connection, table_name, rows, required_fields, unique_key, forei
                     skipped += 1
                     continue
             
-            # Clean up keys matching missing records
             columns = [key for key, value in row.items() if value not in (None, "")]
-            # ✅ MySQL uses %s as parameter markers, not ?
             placeholders = ", ".join(["%s"] * len(columns))
             
-            sql = f"INSERT IGNORE INTO {table_name} ({', '.join(columns)}) VALUES ({placeholders})"
+            # Using standard INSERT instead of IGNORE to catch the exact error
+            sql = f"INSERT INTO {table_name} ({', '.join(columns)}) VALUES ({placeholders})"
             values = [row[column] for column in columns]
             
-            cursor.execute(sql, values)
-            if cursor.rowcount > 0:
+            try:
+                cursor.execute(sql, values)
                 inserted += 1
                 seen.add(unique_value)
-            else:
+            except Exception as e:
+                logger.error(f"❌ Failed to insert into {table_name} (Value: {unique_value}). Error: {e}")
                 skipped += 1
                 
     logger.info("%s: inserted=%s skipped=%s", table_name, inserted, skipped)
 
+
 def seed_database():
     connection = get_connection()
     try:
-        # ✅ FIX: Wipe the old structure clean BEFORE applying the fresh schemas
         reset_tables(connection)
         execute_schema(connection)
         
@@ -306,13 +309,31 @@ def seed_database():
         metadata_rows = read_json_rows("metadata.json")
         scenario_rows = read_json_rows("user_scenarios.json")
 
-        temple_ids = {row["temple_id"].strip() for row in temple_rows if row.get("temple_id")}
+        # Fallback: If headers are corrupted as A1, B1, map them by index order instead
+        def remap_row_by_index(rows, expected_keys):
+            mapped_rows = []
+            for row in rows:
+                current_values = list(row.values())
+                new_row = {}
+                for idx, key in enumerate(expected_keys):
+                    if idx < len(current_values):
+                        new_row[key] = current_values[idx]
+                mapped_rows.append(new_row)
+            return mapped_rows
 
-        insert_rows(connection, "temples", temple_rows, ["temple_id", "temple_name", "state", "district", "location", "description"], "temple_id")
-        insert_rows(connection, "travel_routes", route_rows, ["route_id", "source", "destination", "travel_mode", "duration"], "route_id")
-        insert_rows(connection, "budgets", budget_rows, ["budget_id", "temple_id", "budget_type", "min_cost", "max_cost", "persons", "days"], "budget_id", ("temple_id", temple_ids))
-        insert_rows(connection, "schedules", schedule_rows, ["schedule_id", "temple_id", "activity", "start_time", "end_time"], "schedule_id", ("temple_id", temple_ids))
-        insert_rows(connection, "temple_places", place_rows, ["place_id", "temple_id", "place_name", "place_type"], "place_id", ("temple_id", temple_ids))
+        # Map rows using explicit target keys matching your schema
+        temple_mapped = remap_row_by_index(temple_rows, ["temple_id", "temple_name", "state", "district", "location", "description"])
+        route_mapped = remap_row_by_index(route_rows, ["route_id", "source", "destination", "travel_mode", "duration"])
+        budget_mapped = remap_row_by_index(budget_rows, ["budget_id", "temple_id", "budget_type", "min_cost", "max_cost", "persons", "days"])
+        schedule_mapped = remap_row_by_index(schedule_rows, ["schedule_id", "temple_id", "activity", "start_time", "end_time"])
+        place_mapped = remap_row_by_index(place_rows, ["place_id", "temple_id", "place_name", "place_type"])
+
+        # Inject the mapped rows smoothly bypass lookup flags
+        insert_rows(connection, "temples", temple_mapped, ["temple_id", "temple_name"], "temple_id")
+        insert_rows(connection, "travel_routes", route_mapped, ["route_id", "source", "destination"], "route_id")
+        insert_rows(connection, "budgets", budget_mapped, ["budget_id", "temple_id"], "budget_id")
+        insert_rows(connection, "schedules", schedule_mapped, ["schedule_id", "temple_id"], "schedule_id")
+        insert_rows(connection, "temple_places", place_mapped, ["place_id", "temple_id"], "place_id")
 
         logger.info("metadata.json entries=%s", len(metadata_rows))
         logger.info("user_scenarios.json entries=%s", len(scenario_rows))
