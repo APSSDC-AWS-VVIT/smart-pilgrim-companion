@@ -273,6 +273,18 @@ import Loader from '../components/Loader';
 import { loadPlannerData } from '../services/plannerService';
 import { getTemples } from '../services/templeService';
 
+
+function formatMoney(minCost, maxCost) {
+  if (minCost === undefined || maxCost === undefined) {
+    return '';
+  }
+  return `₹${Number(minCost).toLocaleString('en-IN')} - ₹${Number(maxCost).toLocaleString('en-IN')}`;
+}
+
+
+
+
+
 export default function TravelPlannerPage() {
   const [selectedTempleId, setSelectedTempleId] = useState('T001');
   const [budgetType, setBudgetType] = useState('low');
